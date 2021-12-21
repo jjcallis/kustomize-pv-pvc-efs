@@ -1,0 +1,32 @@
+# EFS PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: efs
+spec:
+  capacity:
+    # NOTE: EFS auto expands, and the storage field is a NOOP,
+    # but it's needed to pass the kubectl sniff test, so an arbitrary
+    # size is ok.
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    # FSID
+    volumeHandle: ChangeToTheFileSystemId
+--- 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: efs-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 8Gi
